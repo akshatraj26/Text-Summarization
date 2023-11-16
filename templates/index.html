@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ url_for('static', filename= "css/style.css")}}">
+        
+    </head>
+    <body>
+        <div class="main-container">
+        <div class="container">
+            <h1 class='heading'>Text Summarizer</h1>
+           <!-- <h1>Summarize For Me</h1>
+            <p>Read Less Do More</p>-->
+            <div class="output">
+                <h1>Summarized Text</h1>
+                 <p class='result'>{{ data }}</p>
+            </div>
+            
+        </div>     
+    </div>
+    <div class="wrapper">  
+    <form action="{{ url_for("summarizer") }}", method='post'>
+        <label for="">Give the Topic that you want to Summarize</label><br><br>
+        <textarea type='text' name="userinput" rows=10 placeholder="Give me the long article I will summarize it for you." required onkeypress="auto_grow(this);" onkeyup="auto_grow(this);"></textarea><br><br>
+        <input type="submit" value="Summarize">
+
+
+    </form>
+</div>
+   
+        <script src="" async defer></script>
+    </body>
+</html>
