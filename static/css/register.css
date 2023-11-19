@@ -1,14 +1,13 @@
 nav {
     padding: 0;
     margin: 15px;
-    /* overflow: hidden; */
+    overflow: hidden;
     width: 100%;
     height: 82px;
     background: #34495e;
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 0;
     box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1); 
-    
 
 } 
 
@@ -34,8 +33,6 @@ nav a{
     justify-content: space-around;
     padding: 15px;
     border-radius: 15px;
-p
-
     
 
 }
@@ -47,7 +44,6 @@ li a:hover {
     background-color: #111;}
 
 
-
 .form{
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
     background: rgb(131,58,180);
@@ -57,20 +53,21 @@ li a:hover {
     align-items: center;
     text-align: center;
     position: absolute;
-    left: 35%;
+    left: 30%;
     top: 20%;
     transform: translate(-50, 50);
-    width: 30%;
+    width: 40%;
     height: 50%;
     right: 100px;
     padding-bottom: 20px;
     padding-top: 20px;
+    padding-bottom: 150px;
 }
 
 body{
     background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(121,9,34,1) 35%, rgba(102,0,255,1) 100%);
-     
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(121,9,34,1) 35%, rgba(102,0,255,1) 100%); 
+    
     overflow-y: scroll;
 }
 
@@ -93,22 +90,34 @@ body{
     text-align: center;
     font-size: medium;
     font-weight: 500;
+    margin-bottom: 40px;
     margin: 10px 10px;
     cursor: pointer;
     outline: 0;
     border: 0;
-    
     /* transition: background 1s; */
+    
 }
+
+/* .form button, input[type = 'submit'] :hover{
+    
+    background: #3600a0;
+    color: white;
+} */
+
+/* .input[type = 'submit'] :hover{
+    
+    background: #3600a0;
+    color: white;
+
+    
+} */
 
 input[type = 'submit']{
     background: #3600a0;
     color: white;
-
 }
 
-
-.form p{
-    text-align: center;
-    padding-right: 100px;
+.output{
+    color: white;
 }

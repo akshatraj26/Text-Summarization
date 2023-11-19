@@ -1,5 +1,5 @@
 from flask import Flask, url_for, render_template, request
-
+import json
 import spacy
 from string import punctuation
 from heapq import nlargest
@@ -10,17 +10,49 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    
     return render_template('index.html')
 
 
+@app.route('/signup')
+def signup():
+ 
+    return render_template('register.html')
+
+@app.route('/register_data', methods = ['POST'])
+def register_data():
+    if request.method == "POST":
+        name = request.form['name']
+        uname = request.form['uname']
+        email = request.form['email']
+        pwd = request.form['password']
+        
+        # print(name, uname, email, pwd)
+        return render_template('register.html', name = name, uname =uname, email=email, pwd=pwd)
+        
+
+@app.route('/signin')
+def signin():
+    
+    return render_template('login.html')
+
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    email = request.form['email'] 
+    pwd = request.form['password']
+    if email and pwd:
+        return json.dumps({'validation' : validateUser(email, pwd)})
+    
+    return json({'validation': False})
+
+
+def validateUser(username, password):
+    return True
+
 
 
 @app.route('/summarizer', methods=['POST'])
 def summarizer():
+
     data = {}
     if request.method == "POST":
         user_input = request.form['userinput']
@@ -48,12 +80,15 @@ def summarizer():
                 word_frequencies[word] = word_frequencies[word]/max_frequency
             return word_frequencies
         
+        
         def find_sentence_tokens(doc):
             """Sentence tokens are units of text that represent individual sentences within a larger body of text. In natural language processing (NLP), tokenization is the process of breaking down a text into smaller components, which can be words, phrases, or sentences, depending on the level of granularity. Sentence tokens specifically refer to the segmentation of text into sentences.
             """
             return [sent for sent in doc.sents]
         
         # we are going to calculate the sentence score, to calculate the sentence score we have to calculate the frequency of repeated word in each sentence
+        
+        
         def find_sentence_scores(doc):
             """Sentence scores are values assigned to sentences in a document based on various criteria, such as the frequency of important words, their position in the text, or their relationships with other sentences. These scores are used to identify and prioritize sentences for inclusion in a summary.
             """
@@ -69,6 +104,8 @@ def summarizer():
                             sentence_scores[sent] += word_frequencies[word.text.lower()]
             return sentence_scores
         
+        
+        
         def find_summary(doc, content_length):
             #we have to select maximum 4 sentences out of all sentences
             """Summaries are typically much shorter than the original text, often reducing the length by a significant factor. The goal is to present the core information while eliminating unnecessary details.
@@ -83,7 +120,9 @@ def summarizer():
             
             final_summary = [word.text for word in summary]
             return final_summary
+        
         data['summary'] = find_summary(doc, content_length=0.5)
+        
         
         def preprocess_text(sentences):
             cleaned_sentences = []

@@ -7,8 +7,7 @@
         <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css')}}">
-       <!-- <script src="https://kit.fontawesome.com/c4254e24a8.js" crossorigin="anonymous"></script> -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css')}}">
     </head>
     <body>
         <header>
@@ -21,21 +20,28 @@
                 <ul>
             </nav>
         </header>
-
-        
         <div class="form">
-            <form name="data" action=".", method="post" >
-                <h1>Sign In</h1>
+            <form action="{{ url_for("register_data") }}", name="data" method='post'>
+                <h1>Sign Up</h1>
+                <input type="text" placeholder="Name" name="name" required><br>
+                <input type="text" placeholder="Username" name="uname" required><br>
                 <input type="email" placeholder="Email id" name='email' required><br>
                 <input type="password" placeholder="Password" name= 'password' required><br>
-                <p>Forgot Password <a href="#">Click Here</a></p>
-                <a href="{{ url_for('signup') }}">
-                    <button type="button">Sign up</button>
+                <input type="submit" value="Sign Up">
+                       
+                <a href="{{url_for('signin')}}">
+                    <button type="button" >Sign in</button>
                 </a>
-                <input type='submit' value="Sign in">
-                
-                
+            
             </form>
+    </div>
+
+<div class="output">
+    <h1> Return the value</h1>
+             <h3>{{name}}</h3>
+         <h3>{{ uname }}</h3>
+        <h3>{{email}}</h3>
+        <h3>{{pwd}}</h3>
     </div>
         <script src="" async defer></script>
     </body>
