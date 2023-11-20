@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/contacts.css')}}">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+    <body style="background-color:gray">
+        <header>
+            <nav>
+                <ul>
+                    <li>
+                        <i class="fa-solid fa-house"></i>
+                        <a href = "{{ url_for('index')}}">Home</a></li>
+                    <li><a href = "{{ url_for('signup')}}">Sign Up</a></li>
+                    <li><a href = "{{ url_for('signin')}}">Sign In</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                <ul>
+            </nav>
+        </header>
+        <div class="container">
+        <div class="row text-center mt-5 social-media">
+
+            <div class="col-3 ">
+                <a href ="https://wa.me/918578829260" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <p>WhatsApp</p>
+                </a>
+            </div>
+            <div class="col-3 ">
+                <a href="https://www.instagram.com/akshat9289/" target="_blank">
+                    <i class="fa-brands fa-instagram"></i>
+                    <p>Instagram</p>
+                </a>
+            </div>
+            <div class="col-3">
+                <a href="https://twitter.com/akshatraj26" target="_blank"> 
+                    <i class="fa-brands fa-twitter"></i>
+                    <p>Twitter</p>
+                </a>
+            </div>
+            <div class="col-3">
+                <a href="https://www.facebook.com/akshat.raj.946179/" target="_blank"> 
+                    <i class="fa-brands fa-facebook"></i>
+                    <p>Facebook</p>
+                </a>
+            </div>
+
+        
+        </div>
+    </div>
+   <div class="container"  >
+    <div class="row text-center mt-5">
+        <div class="col-6">
+
+            <form action="{{ url_for("user_message") }}", name="data" method='post'>
+                <h1 style="color:white">Get in touch</h1>
+                
+                <input class="form-control" type="text" placeholder="Full Name" name="user_name" required><br>
+                
+                <input class="form-control" type="email" placeholder="Email id" name='email' required><br>
+                
+                <input class="form-control" type="text" placeholder="Subject" name="subject" required><br>
+             
+                <textarea class="form-control" name="message" id="" cols="15" rows="5"required placeholder="Message" ></textarea><br>
+                
+                <input class="form-control" type="submit" value="Send Message">
+                       
+                
+            
+            <!--When username already exists-->
+            <h3 style="color:white">{{ message }}</h3>
+            </form>
+        </div>
+        <div class="col-6">
+            <img src="https://i.pinimg.com/736x/77/5a/b8/775ab8f7dcb36967199e17b6a02b5a9b.jpg" class = "img-fluid">
+        </div>
+        </div>
+    </div>
+</div>
+
+       
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    </body>
+</html>

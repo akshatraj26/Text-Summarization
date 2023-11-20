@@ -15,9 +15,11 @@
             <nav>
                 <ul>
                     <li><a href = "{{ url_for('index')}}">Home</a></li>
-                    <li><a href = "{{ url_for('signup')}}">Sign Up</a></li>
+                    <li><a href = "{{ url_for('signup')}}">Log Out</a></li>
+                    <!--
                     <li><a href = "{{ url_for('signin')}}">Sign In</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                    -->
+                    <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
                 <ul>
             </nav>
         </header>

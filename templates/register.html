@@ -16,12 +16,12 @@
                     <li><a href = "{{ url_for('index')}}">Home</a></li>
                     <li><a href = "{{ url_for('signup')}}">Sign Up</a></li>
                     <li><a href = "{{ url_for('signin')}}">Sign In</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
                 <ul>
             </nav>
         </header>
         <div class="form">
-            <form action="{{ url_for("register_data") }}", name="data" method='post'>
+            <form action="{{ url_for("Register") }}", name="data" method='post'>
                 <h1>Sign Up</h1>
                 <input type="text" placeholder="Name" name="name" required><br>
                 <input type="text" placeholder="Username" name="uname" required><br>
@@ -33,16 +33,12 @@
                     <button type="button" >Sign in</button>
                 </a>
             
+            <!--When username already exists-->
+            <h3 style="color:white">{{ message }}</h3>
             </form>
     </div>
 
-<div class="output">
-    <h1> Return the value</h1>
-             <h3>{{name}}</h3>
-         <h3>{{ uname }}</h3>
-        <h3>{{email}}</h3>
-        <h3>{{pwd}}</h3>
-    </div>
+
         <script src="" async defer></script>
     </body>
 </html>

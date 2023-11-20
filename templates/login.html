@@ -14,19 +14,21 @@
         <header>
             <nav>
                 <ul>
-                    <li><a href = "{{ url_for('index')}}">Home</a></li>
-                    <li><a href = "{{ url_for('signup')}}">Sign Up</a></li>
-                    <li><a href = "{{ url_for('signin')}}">Sign In</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                    <li><a href = "{{ url_for('index') }}">Home</a></li>
+                    <!--
+                    <li><a href = "{{ url_for('signup') }}">Sign Up</a></li>
+                    <li><a href = "{{ url_for('signin') }}">Sign In</a></li>
+                    -->
+                    <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
                 <ul>
             </nav>
         </header>
 
         
         <div class="form">
-            <form name="data" action=".", method="post" >
+            <form name="data" action="{{ url_for('login')}}", method="post" >
                 <h1>Sign In</h1>
-                <input type="email" placeholder="Email id" name='email' required><br>
+                <input type="text" placeholder="Username" name='username' required><br>
                 <input type="password" placeholder="Password" name= 'password' required><br>
                 <p>Forgot Password <a href="#">Click Here</a></p>
                 <a href="{{ url_for('signup') }}">
@@ -34,7 +36,7 @@
                 </a>
                 <input type='submit' value="Sign in">
                 
-                
+                <h2>{{ message }}</h2>
             </form>
     </div>
         <script src="" async defer></script>

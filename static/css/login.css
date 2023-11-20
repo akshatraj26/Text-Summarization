@@ -34,11 +34,8 @@ nav a{
     justify-content: space-around;
     padding: 15px;
     border-radius: 15px;
-p
-
-    
-
 }
+
 li{
     float: left;
 }
@@ -61,7 +58,7 @@ li a:hover {
     top: 20%;
     transform: translate(-50, 50);
     width: 30%;
-    height: 50%;
+    height: 55%;
     right: 100px;
     padding-bottom: 20px;
     padding-top: 20px;
@@ -111,4 +108,8 @@ input[type = 'submit']{
 .form p{
     text-align: center;
     padding-right: 100px;
+}
+
+h2{
+    color: white;
 }
