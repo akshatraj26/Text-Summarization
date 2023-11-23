@@ -23,39 +23,51 @@
 .form{
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
     background: rgb(131,58,180);
-    /* background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);  */
-    /* background-color: #96344c; */
     background: linear-gradient(135deg, #cc2b5e, #96344c, #753a88);
     border-radius: 40px;
-    position: absolute;
-    align-items: center;
-    text-align: center;
-    left: 30%;
-    top: 25%;
-    transform: translate(-50, 50);
-    width: 40%;
-    height: 70%;
-    right: 100px;
-    padding-bottom: 20px;
-    padding-top: 20px;
-    padding-bottom: 150px;
+
 }
+
+/* position: absolute;
+align-items: center;
+text-align: center;
+left: 30%;
+top: 25%;
+transform: translate(-50, 50);
+width: 40%;
+height: 70%;
+right: 100px;
+padding-bottom: 20px;
+padding-top: 20px;
+padding-bottom: 150px; */
 
 body{
     background: rgb(2,0,36);
-    /* background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(121,9,34,1) 35%, rgba(102,0,255,1) 100%);  */
     background: linear-gradient(135deg, #cc2b5e, #753a88);
     
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 
-.form input[type = "text"], .form input[type="password"], .form input[type="email"]{
+
+/* .form input[type = "text"], .form input[type="password"], .form input[type="email"]{
     padding: 10px;
     border-radius: 10px;
     margin: 15px;
     width: 40%;
     font-size: larger;
     border: none;
+} */
+
+.form-element{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    background: rgb(131,58,180);
+    background: linear-gradient(135deg, #cc2b5e, #96344c, #753a88);
+    height: auto;
+    border-radius: 50px;
+    align-items: center;
+    text-align: center;
+    
 }
 
 .form h1{
@@ -87,3 +99,20 @@ input[type = 'submit']{
 .output{
     color: white;
 }
+
+.gradient-custom {
+    background: rgb(2,0,36);
+    background: linear-gradient(135deg, #cc2b5e, #753a88);
+    
+}
+
+.user-input{
+        padding: 10px;
+        border-radius: 10px;
+        margin: 15px;
+        width: 50%;
+        font-size: medium;
+        border: none;
+        width: 40%;
+}
+

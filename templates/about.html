@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Your Company</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/about.css") }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+<body>
+
+
+  <header>
+    <div class="row text-center nav-container">
+     <div class= "row text-center mt-3 nav-bar">
+             <div class="col-3">
+                 <a href = "{{ url_for('index')}}">
+                 <i class="fa-solid fa-house"></i>
+                 <p> Home </p></a>
+            </div>
+            
+            <div class="col-3">
+                <a href = "{{ url_for('contact')}}">
+                    <i class="fa-solid fa-address-card"></i>
+                <p> Contact Us </p></a>
+           </div>
+             
+             <div class="col-3">
+                 <a href="#get-in-touch">
+                     <i class="fa-solid fa-address-card"></i>
+                     <p>Get in Touch</p>
+                 </a>
+             </div>
+
+             <div class="col-3">
+                <a href="#about-me">
+                    <i class="fa-regular fa-id-card"></i>
+                    <p>About me</p>
+                </a>
+            </div>
+         </div>
+     </div>
+ </header>
+
+
+  <main>
+    
+
+    <section id="get-in-touch">
+      <h2>Contact</h2>
+      <div class="col-md-4 mx-auto ">
+              
+              <p><i class="fas fa-home mr-5"></i> Shivbagh Colony, Ammerpet, Hyderabad, 500016</p>
+              <p><i class="fas fa-envelope mr-5"></i> akshatraj2607@gmail.com</p>
+              <p><i class="fas fa-phone mr-5"></i> +91 857 882 9260</p>
+        </div>
+    </section>
+
+  
+
+    <section id="about-me">
+      <h2>About me</h2>
+      <p>I'm a recent Computer Science graduate, specializing in Machine Learning and AI. My education equipped me with a solid CS foundation and a fascination for cutting-edge technologies. I'm passionate about utilizing tech, particularly AI and ML, to address real-world issues. I thrive on continual learning in the fast-paced tech world and aim to contribute my skills to innovate and create meaningful solutions in this ever-evolving landscape.</p>
+    </section>
+
+    
+  </main>
+
+  <!-- Remove the container if you want to extend the Footer to full width. -->
+<div class="container my-5">
+    <!-- Footer -->
+    <footer
+            class="text-center text-lg-start text-white"
+            style="background-color: #45526e"
+            >
+      <!-- Grid container -->
+      <div class="container p-2 pb-0">
+        <!-- Section: Links -->
+        <section class="">
+          <!--Grid row-->
+          <div class="row">
+
+            <hr class="w-100 clearfix d-md-none" />
+
+            <!-- Grid column -->
+            
+            <div class=" text-center">
+              <h6 class="text-uppercase mb-3 font-weight-bold">
+                Useful links
+              </h6>
+              <p>
+                <a class="text-white" href="{{ "account" }}">Your Account</a>
+              </p>
+
+              <p>
+                <a class="text-white" href={{ 'contact' }}>Help</a>
+              </p>
+            </div>
+            </div>
+            <!-- Grid column -->
+            <hr class="w-100 clearfix d-md-none" />
+  
+          </div>
+          <!--Grid row-->
+        </section>
+        <!-- Section: Links -->
+  
+        <hr class="my-3">
+  
+        <!-- Section: Copyright -->
+        <section class="p-3 pt-0">
+          <div class="row d-flex align-items-center">
+            <!-- Grid column -->
+            <div class="col-md-2 col-lg-8 text-center text-md-start">
+              <!-- Copyright -->
+              <div class="p-3">
+                © 2023 Copyright:
+                <a class="text-white" href="#"
+                   ></a
+                  >
+              </div>
+              <!-- Copyright -->
+            </div>
+           
+            <div class="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
+              <!-- FacGithubebook -->
+              <a
+                 class="btn btn-outline-light btn-floating m-1"
+                 class="text-white"
+                 role="button"
+                 href ="https://github.com/akshatraj26"
+                 ><i class="fab fa-github"></i
+                ></a>
+               
+              <!-- Twitter -->
+              <a
+                 class="btn btn-outline-light btn-floating m-1"
+                 class="text-white"
+                 role="button"
+                 href="https://twitter.com/akshatraj26"
+                 ><i class="fab fa-twitter"></i
+                ></a>
+  
+            
+              <!-- Instagram -->
+              <a
+                 class="btn btn-outline-light btn-floating m-1"
+                 class="text-white"
+                 role="button"
+                 href="https://www.instagram.com/akshat9289/"
+                 ><i class="fab fa-instagram"></i
+                ></a>
+            </div>
+            <!-- Grid column -->
+          </div>
+        </section>
+        <!-- Section: Copyright -->
+      </div>
+      <!-- Grid container -->
+    </footer>
+    <!-- Footer -->
+  </div>
+  <!-- End of .container -->
+
+ 
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body>
+</html>

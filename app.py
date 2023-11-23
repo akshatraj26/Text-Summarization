@@ -61,7 +61,7 @@ def index():
 
 @app.route('/contact')
 def contact():
-    return render_template('contacts.html')
+    return render_template('contact.html')
 
 @app.route('/signup')
 def signup():
@@ -71,17 +71,18 @@ def signup():
 @app.route('/logout')
 def logout():
     return redirect(url_for('main'))
-    
+   
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route('/user_message', methods=["GET", 'POST'])
 def user_message():
     
     
     if request.method == "POST":
-        name = ''
-        email = ''
-        name = request.form['user_name']
         
+        name = request.form['user_name']
         email = request.form['email']
         subject = request.form['subject']
         message = request.form['message']
@@ -113,7 +114,6 @@ def Register():
         
         new_user = User(name=name, username =uname, email =email, password=pwd)
 
-
         try:
             
             db.session.add(new_user)
@@ -130,9 +130,32 @@ def Register():
 
 @app.route('/signin')
 def signin():
-    
     return render_template('login.html')
 
+
+
+@app.route('/account', methods= ['POST', 'GET'])
+def account():
+    if 'logged_in' in session and session['logged_in']:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+
+        if user:
+            user_data = {
+                'username': user.username,
+                'name': user.name,
+                'email': user.email
+            }
+
+            return render_template('account.html', user_data=user_data)
+        else:
+            flash("User not found", 'error')
+            return redirect(url_for('signin'))
+    else:
+        flash("Please log in first", 'error')
+        return redirect(url_for('signin'))
+
+    
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -145,7 +168,13 @@ def login():
                 session['logged_in'] =True
                 session['user_id'] = user.id
                 flash("Login successful!", 'success')
-                return redirect(url_for('index'))
+                
+                user_data = {'username' : user.username,
+                            'name' : user.name,
+                            'email' : user.email
+                            }
+                
+                return render_template('index.html',  user_data = user_data )
 
             else:
                 flash("Incorrect password. Please try again.", 'error')
@@ -268,4 +297,4 @@ def summarizer():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=80)

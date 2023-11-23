@@ -1,0 +1,40 @@
+.nav-bar i{
+    font-size: 35px;
+    border-radius: 50%;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.3);
+    transition: ease-in-out;
+    transition-duration: 1s;
+}
+
+
+.nav-bar a{
+    text-decoration: none;
+    color: white;
+}
+
+.nav-bar i :hover{
+    background-color: rgba(0, 0, 0, 0.7);
+    color: aliceblue;
+}
+
+
+.form-element{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    background: rgb(131,58,180);
+    background: linear-gradient(135deg, #cc2b5e, #96344c, #753a88);
+    border-radius: 40px;
+    text-align: center;
+    width: 400px;
+    height: 40%;
+    
+
+            
+}        
+body{
+    background: rgb(2,0,36);
+    width: 100%;
+    height: auto;
+    background: linear-gradient(135deg, #cc2b5e, #753a88);
+     
+}

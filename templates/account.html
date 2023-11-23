@@ -7,20 +7,21 @@
         <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css')}}">
+        <link rel="stylesheet" href="{{ url_for('static', filename= "css/account.css")}}">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         
     </head>
     <body>
-        <header>
+       
+         <header>
             <div class="row text-center nav-container">
              <div class= "row text-center mt-3 nav-bar">
                      <div class="col-6">
                          <a href = "{{ url_for('index')}}">
                          <i class="fa-solid fa-house"></i>
                          <p> Home </p></a>
-                         </div>
+                    </div>
                      
                      <div class="col-6">
                          <a href="{{ url_for('contact')}}">
@@ -32,25 +33,15 @@
                  </div>
              </div>
          </header>
-
 <!--
-        <div class="form">
-            <form action="{{ url_for("Register") }}", name="data" method='post'>
-                <h1>Sign Up</h1>
-                <input type="text" placeholder="Name" name="name" required><br>
-                <input type="text" placeholder="Username" name="uname" required><br>
-                <input type="email" placeholder="Email id" name='email' required><br>
-                <input type="password" placeholder="Password" name= 'password' required><br>
-                <input type="submit" value="Sign Up">
-                       
-                <a href="{{url_for('signin')}}">
-                    <button type="button" >Sign in</button>
-                </a>
-            
-            When username already exists
-            <h3 style="color:white">{{ message }}</h3>
-            </form>
+        <div class="container text-center mt-3">
+            <div class="container-2 text-center mt-3">
+                
+                
+                
+            </div>
     </div>
+</div>
 -->
 
 <form class="form" action= "{{ url_for('Register')}}" method="POST">
@@ -63,45 +54,24 @@
       
                   <div class="mb-md-3 mt-md-3 pb-5">
       
-                    <h2 class="fw-bold my-4 text-center">Sign Up</h2>
+                    <h2 class="fw-bold my-4 text-center">Profile</h2>
                    
                     <div class="form-outline form-white mb-4">
 
-                        <input type="text" placeholder="Name" name="name" class="form-control form-control-lg" id="typePassword"required />
+                        <h1>Welcome, {{user_data.username }}</h1>
                     </div>
       
                     <div class="form-outline form-white mb-4">
                       
-                        <input type="text" placeholder="Username" name="uname" class="form-control form-control-lg" id = "typeUsernameX"required />
+                        <p>Name : {{ user_data.name }}</p>
                     </div>
                     
                     <div class="form-outline form-white mb-4">
-                        <input type="email" placeholder="Email id" name='email' class="form-control form-control-lg" required />
+                        <p> Email: {{ user_data.email}}</p>
                     </div>
 
-                    <div class="form-outline form-white mb-4">
-                    
-                        <input type="password" placeholder="Password" name= 'password' class="form-control form-control-lg" id = "typePasswordX" required />
-                      </div>
 
-                    <button type = 'submit' class= "btn btn-success ">Sign Up</button>
-      
-                    <div class="d-flex justify-content-center text-center mt-2 pt-1">
-                      <a href="#!" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
-                      <a href="#!" class="text-white"><i class="fab fa-twitter fa-lg mx-4 px-2"></i></a>
-                      <a href="#!" class="text-white"><i class="fab fa-google fa-lg"></i></a>
-                    </div>
-                    
-                  </div>
-      
-                  <div>
-                    
-                    <p class="mb-0">If you have an account?
-                    <a href="{{ url_for('signin') }}" class ='fw-bold'>
-                            <button type="button" class= "signup">Sign in</button>
-                    </a>
-                    
-                  </div>
+                  
       
                 </div>
               </div>
@@ -110,7 +80,9 @@
         </div>
       </section>
     </form>
-        <script src="" async defer></script>
+
+   
+   
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     </body>
 </html>

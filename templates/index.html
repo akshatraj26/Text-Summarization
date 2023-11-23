@@ -16,52 +16,82 @@
         <header>
             <div class="row text-center nav-container">
              <div class= "row text-center mt-3 nav-bar">
-                     <div class="col-4">
+                     <div class="col-3">
                          <a href = "{{ url_for('index')}}">
                          <i class="fa-solid fa-house"></i>
                          <p> Home </p></a>
                          </div>
-                     <div class="col-4">
+                     <div class="col-3">
                          <a href = "{{ url_for('signup')}}">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <p> Log Out </p>
                          </a>
                      </div>
                      
-                     <div class="col-4">
+                     <div class="col-3">
                          <a href="{{ url_for('contact')}}">
                              <i class="fa-solid fa-address-card"></i>
                              <p>Contact Us</p>
                          </a>
                      </div>
-                     
-                
+
+                     <div class="col-3 user">
+                        <a href="{{ url_for('account') }}">
+                            <i class="fa-solid fa-user"></i>
+                                    <p>Account</p>
+                              
+                        </a>
+                    </div>
+
                  </div>
              </div>
          </header>
- 
-        <div class="main-container">
-        <div class="container">
+            
+<!-- <h1>Summarize For Me</h1>
+    <p>Read Less Do More</p>-->
+
+<form class="form" action= "{{ url_for("summarizer") }}" method="POST">
+    <section class="vh-100 gradient-custom">
+        <div class="container py-2 h-100">
             <h1 class='heading'>Text Summarizer</h1>
-           <!-- <h1>Summarize For Me</h1>
-            <p>Read Less Do More</p>-->
-            <div class="output">
-                <h1>Summarized Text</h1>
-                 <p class='result'>{{ data }}</p>
+          <div class="row d-flex justify-content-center align-items-center h-75">
+            <div class="col-12 col-md-0 col-lg-6 col-xl-5">
+              <div class="card text-white form-element" style="border-radius: 1rem;">
+                <div class="card-body p-3 text-center">
+      
+                  <div class="mb-md-2 mt-md-3 pb-3">
+      
+                
+                    <div class="output">
+                        <h1 class="fw-bold my-3 text-center">Summarized Text</h1>
+                         <p class='result'>{{ data }}</p>
+                    </div>
+     
+                    <div class="form-outline form-white mb-4">
+                        <textarea type='text' name="userinput" class="form-control" rows=10 placeholder="Give me the long article I will summarize it for you." required onkeypress ="auto_grow(this);" onkeyup="auto_grow(this);"></textarea><br><br>
+                        
+                    </div>
+
+                
+                    <button type = 'submit' class= "btn btn-success ">Summarize</button>
+      
+                  
+                    
+                  </div>
+      
+                  <div>
+                    
+                  </div>
+      
+                </div>
+              </div>
             </div>
-    
-        </div>     
-    </div>
-    <div class="wrapper">  
-    <form action="{{ url_for("summarizer") }}", method='post'>
-        <!-- <label for="">Give the Topic that you want to Summarize</label><br><br> -->
-        <textarea type='text' name="userinput" rows=10 placeholder="Give me the long article I will summarize it for you." required onkeypress ="auto_grow(this);" onkeyup="auto_grow(this);"></textarea><br><br>
-        <input type="submit" value="Summarize">
-
-
+          </div>
+        </div>
+      </section>
     </form>
-</div>
-   
+
+
         <script src="{{ url_for('static', filename='script.js')}}" async defer></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     </body>
