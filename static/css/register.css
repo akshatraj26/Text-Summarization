@@ -1,3 +1,13 @@
+
+header {
+    background: rgb(2,0,36);
+    background: linear-gradient(135deg, #cc2b5e, #753a88);
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+}
+
+
 .nav-bar i{
     font-size: 35px;
     border-radius: 50%;
@@ -6,6 +16,7 @@
     transition: ease-in-out;
     transition-duration: 1s;
 }
+
 
 
 .nav-bar a{
@@ -28,18 +39,7 @@
 
 }
 
-/* position: absolute;
-align-items: center;
-text-align: center;
-left: 30%;
-top: 25%;
-transform: translate(-50, 50);
-width: 40%;
-height: 70%;
-right: 100px;
-padding-bottom: 20px;
-padding-top: 20px;
-padding-bottom: 150px; */
+
 
 body{
     background: rgb(2,0,36);
@@ -50,14 +50,7 @@ body{
 }
 
 
-/* .form input[type = "text"], .form input[type="password"], .form input[type="email"]{
-    padding: 10px;
-    border-radius: 10px;
-    margin: 15px;
-    width: 40%;
-    font-size: larger;
-    border: none;
-} */
+
 
 .form-element{
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
@@ -74,7 +67,7 @@ body{
     color: whitesmoke;
 }
 
-.form button, input[type = 'submit']{
+.form button{
     border-radius: 20px;
     width: 100px;
     height: 50px;
@@ -86,15 +79,11 @@ body{
     cursor: pointer;
     outline: 0;
     border: 0;
-    /* transition: background 1s; */
+    
     
 }
 
 
-input[type = 'submit']{
-    background: #3600a0;
-    color: white;
-}
 
 .output{
     color: white;

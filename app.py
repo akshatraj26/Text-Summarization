@@ -61,7 +61,7 @@ def index():
 
 @app.route('/contact')
 def contact():
-    return render_template('contact.html')
+    return render_template('contacts.html')
 
 @app.route('/signup')
 def signup():
@@ -75,6 +75,7 @@ def logout():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
 
 @app.route('/user_message', methods=["GET", 'POST'])
 def user_message():
@@ -102,7 +103,7 @@ def user_message():
             
       
 
-@app.route('/register_data', methods = ['GET', 'POST'])
+@app.route('/Register', methods = ['GET', 'POST'])
 def Register():
     if request.method == "POST":
         name = request.form['name']
@@ -174,7 +175,7 @@ def login():
                             'email' : user.email
                             }
                 
-                return render_template('index.html',  user_data = user_data )
+                return render_template('index.html',  name = user_data['name'] )
 
             else:
                 flash("Incorrect password. Please try again.", 'error')

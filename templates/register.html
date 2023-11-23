@@ -17,9 +17,9 @@
             <div class="row text-center nav-container">
              <div class= "row text-center mt-3 nav-bar">
                      <div class="col-6">
-                         <a href = "{{ url_for('index')}}">
-                         <i class="fa-solid fa-house"></i>
-                         <p> Home </p></a>
+                         <a href = "{{ url_for('about')}}">
+                          <i class="fa-solid fa-info"></i>
+                         <p> About Us </p></a>
                          </div>
                      
                      <div class="col-6">
@@ -33,25 +33,6 @@
              </div>
          </header>
 
-<!--
-        <div class="form">
-            <form action="{{ url_for("Register") }}", name="data" method='post'>
-                <h1>Sign Up</h1>
-                <input type="text" placeholder="Name" name="name" required><br>
-                <input type="text" placeholder="Username" name="uname" required><br>
-                <input type="email" placeholder="Email id" name='email' required><br>
-                <input type="password" placeholder="Password" name= 'password' required><br>
-                <input type="submit" value="Sign Up">
-                       
-                <a href="{{url_for('signin')}}">
-                    <button type="button" >Sign in</button>
-                </a>
-            
-            When username already exists
-            <h3 style="color:white">{{ message }}</h3>
-            </form>
-    </div>
--->
 
 <form class="form" action= "{{ url_for('Register')}}" method="POST">
     <section class="vh-75 gradient-custom">
