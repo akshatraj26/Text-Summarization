@@ -50,6 +50,14 @@
               <form action="{{ url_for('user_message')}}" method ="POST" class="form">
                 <!-- 2 column grid layout with text inputs for the first and last names -->
                 
+                {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning  fade show my-1 text-center" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                 
+                        
+                {% endfor %}
                   
                 <div class="form-outline mb-4">
 
@@ -80,9 +88,7 @@
                   
                   <button type = 'submit' class= "btn btn-success btn-block mb-4 submit">Send Message</button>
 
-                    <div class="form-outline form mb-4">
-                        <h3 style="color:white">{{ message }}</h3>
-                    </div>
+                   
                 </div>
   
           

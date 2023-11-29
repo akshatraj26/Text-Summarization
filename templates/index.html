@@ -22,7 +22,7 @@
                          <p> Home </p></a>
                          </div>
                      <div class="col-3">
-                         <a href = "{{ url_for('signup')}}">
+                         <a href = "{{ url_for('logout')}}">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <p> Log Out </p>
                          </a>
@@ -54,6 +54,15 @@
     <section class="vh-100 gradient-custom">
         <div class="container py-2 h-100">
             <h1 class='heading'>Text Summarizer</h1>
+
+            {% for message in get_flashed_messages() %}
+            <div class="alert alert-warning alert-dismissible fade show mx-auto" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+
+                    
+            {% endfor %}
           <div class="row d-flex justify-content-center align-items-center h-75">
             <div class="col-12 col-md-0 col-lg-6 col-xl-5">
               <div class="card text-white form-element" style="border-radius: 1rem;">

@@ -1,21 +1,50 @@
 from flask import Flask, url_for, render_template, request, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from flask_mail import Message, Mail
 from datetime import datetime
 import spacy
 from string import punctuation
 from heapq import nlargest
 from spacy.lang.en.stop_words import STOP_WORDS
 import re
+import random
+import os
+from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import TimestampSigner, TimedSerializer
+# from itsdangerous import TimedJSONWebSignatureSerializer
+# import bcrypt
+from flask_bcrypt import Bcrypt
 
 
 app = Flask(__name__)
+app.secret_key = 'textsummarizer'
 
+ 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "thismyfirstproject"
 db = SQLAlchemy(app)
 app.app_context().push()
+
+
+
+
+# Configure Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587  # Port (587 for TLS)
+app.config['MAIL_USERNAME'] = 'rajakshat7985@gmail.com'
+app.config['MAIL_PASSWORD'] = os.environ.get('SMTP')
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+
+mail = Mail(app)
+bcrypt = Bcrypt()
+
+
+
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +53,26 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
     date_created = db.Column(db.DateTime, default = datetime.utcnow)
+    
+    def get_token(self, expires_sec=300):
+        #serial = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'], expires_in = expires_sec)
+        #serial = URLSafeTimedSerializer(app.config['SECRET_KEY'], serializer=TimedSerializer(max_age = expires_sec))
+        #serial = URLSafeTimedSerializer(app.config['SECRET_KEY'], signer=TimestampSigner())
+        serial = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        #return serial.dumps({'user_id': self.id}, max_age = expires_sec)
+        return serial.dumps({'user_id': self.id})
+        
+    
+    
+    @staticmethod
+    def verify_token(token):
+        serial = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        try:
+            user_id = serial.loads(token)['user_id']
+        except Exception as e:
+            return e
+        return User.query.get(user_id)
+        
     
     
     def __repr__(self):
@@ -50,12 +99,17 @@ class UserQuery(db.Model):
     def __repr_(self):
         return f"UserQuery: {self.fname} - {self.message}"
   
+  
+
 @app.route('/')
 def main():
     return render_template('main.html')
 
 @app.route('/index')
 def index():
+    if 'logged_in' in session and session['logged_in']:
+        flash("Login succesfully", 'success')
+        
     return render_template('index.html')
 
 
@@ -68,13 +122,103 @@ def signup():
     
     return render_template('register.html')
 
-@app.route('/logout')
-def logout():
-    return redirect(url_for('main'))
-   
+
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+# @app.route('/reset', methods =['POST', 'GET'])
+# def reset_request():
+#     if request.method == 'POST':
+#         pwd = request.form['password']
+#         re_pwd = request.form['re_password']
+        
+#         if pwd == re_pwd:
+#             return "Password changed successfully"
+#         else:
+#             flash("Password doesn't match", 'error')
+        
+#     return render_template('reset.html')
+
+
+def send_mail(user):
+    token = user.get_token()
+    msg = Message('Password Reset Request', recipients= [user.email], sender='rajakshat7985@gmail.com')
+    # print("Token", token)
+    # print("Receipent Mail : ", user.email)
+    msg.body = f""" To reset your password. Please follow the link below.
+    
+    
+    {url_for('reset_token', token=token, _external =True)}
+    
+    If you didn't send a password reset request. Please ignore this message.
+    
+    """
+    mail.send(msg)
+
+@app.route('/reset_request', methods = ['GET', 'POST'])
+def reset_request():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        session['email'] = email
+        if email:
+            user = User.query.filter_by(email = email).first()
+            if user:
+                send_mail(user=user)
+                flash("Reset request sent. Please Check your mail.", 'success')
+                return redirect(url_for('login'))
+            else:
+                flash("Email not found. Please give use the right email.", 'error')
+                return redirect(url_for('reset_request'))
+            
+    return render_template('reset_request.html')
+
+
+
+
+
+@app.route('/reset_request/<token>', methods =['GET', 'POST'])
+def reset_token(token):
+    user = User.verify_token(token)
+    
+    if user is None:
+        flash("That is an invalid token or it has expired. Please try again.", 'warning')
+        return redirect(url_for('reset_request'))
+    else:
+        return redirect(url_for('reset_password'))
+
+
+
+
+@app.route("/reset_password", methods=['GET', 'POST'])
+def reset_password():
+    
+    
+    email = session['email']
+    user = User.query.filter_by(email = email).first()
+    print(email)
+    # user = User.query.get(email)
+    if request.method == 'POST':
+        pwd = request.form['password']
+        re_pwd = request.form['re_password']
+        print("pwd", pwd)
+        print("Re_pwd", re_pwd)
+        if pwd != re_pwd:
+            flash("Passwords do not match. Please retype the password properly.", "danger")
+            return render_template('reset_password.html')
+        else:
+            hashed_password = bcrypt.generate_password_hash(pwd).decode('utf-8')
+            
+            print("Saved Password : ", user.password)
+            print("Input Password : ", pwd)
+            user.password = hashed_password
+            db.session.commit()
+            flash("Password changed! Please login", "success")
+            return redirect(url_for('login'))
+    return render_template('reset_password.html')
+
+
 
 
 @app.route('/user_message', methods=["GET", 'POST'])
@@ -94,14 +238,57 @@ def user_message():
         try:
             db.session.add(user_query)
             db.session.commit()
+            flash("Form submitted successfully", 'success')
         except:
-            warning = "This email already exists"
-            return render_template('contacts.html', message = warning)
+            flash("This email already exists")
+            return render_template('contacts.html')
     return render_template('contacts.html', name =name, email=email, subject=subject, message =message)
             
             
-            
-      
+
+
+## Code for verifying the gmail
+
+# @app.route('/generate_otp')
+# def generate_otp():
+#         otp = ''
+#         for i in range(6):
+#             otp += str(random.randint(0, 9))
+        
+#         return otp
+
+
+
+# @app.route('/verify', methods = ['POST'])
+# def verify():
+#     session['otp'] = int(generate_otp())
+#     otp = session.get('otp')
+#     gmail = request.form['email']
+#     msg = Message("Verification Mail", sender='rajakshat7985@gmail.com', recipients=[gmail])
+#     msg.body = f"Your otp for the verifiaction of Text Summarizer is {str(otp)} ."
+#     try:
+#         mail.send(msg)
+#         msg = "Otp sent successfully"
+
+#     except Exception as e:
+#         msg = f"There was some problem sending the email: {str(e)}."
+
+#     return render_template('index.html', msg =msg)
+        
+
+# @app.route('/validate', methods = ['POST'])
+# def validate():
+#     user_otp = request.form['otp']
+#     stored_otp = session.get('otp')
+#     print("user_opt", type(user_otp))
+#     print("stored_otp", type(stored_otp))
+#     if stored_otp == int(user_otp):
+#         message = "Email Verification Succeefully"
+#     else:
+#         message = "Not Verified! Try again"
+#     return render_template('index.html', message=message)
+         
+
 
 @app.route('/Register', methods = ['GET', 'POST'])
 def Register():
@@ -112,7 +299,7 @@ def Register():
         pwd = request.form['password']
         
         # print(name, uname, email, pwd)
-        
+  
         new_user = User(name=name, username =uname, email =email, password=pwd)
 
         try:
@@ -179,18 +366,23 @@ def login():
 
             else:
                 flash("Incorrect password. Please try again.", 'error')
-                message = "Incorrect password. Please try again."
-                return  render_template('login.html', message = message)
+                
+                return  render_template('login.html')
             
         else:
             flash("User does not exist. Please register.", 'error')
-            message = "User does not exist. Please register."
-            return render_template('login.html', message = message)
+            # message = "User does not exist. Please register."
+            return render_template('login.html')
     else:
         return redirect(url_for('signin'))
     
 
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    return redirect(url_for('login'))   
     
+   
 
 @app.route('/summarizer', methods=['POST'])
 def summarizer():

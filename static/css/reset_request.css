@@ -1,0 +1,63 @@
+header {
+    background: rgb(2,0,36);
+    background: linear-gradient(135deg, #cc2b5e, #753a88);
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
+
+
+body{
+    background: rgb(2,0,36);
+    background: linear-gradient(135deg, #cc2b5e, #753a88);
+    
+    
+}
+
+
+
+
+
+.form-element{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    background: rgb(131,58,180);
+    background: linear-gradient(135deg, #cc2b5e, #96344c, #753a88);
+    height: auto;
+    border-radius: 50px;
+    align-items: center;
+    text-align: center;
+    
+    
+}
+
+.form h1{
+    color: whitesmoke;
+}
+
+.form button{
+    border-radius: 20px;
+    width: 150px;
+    height: 50px;
+    text-align: center;
+    font-size: medium;
+    font-weight: 500;
+    margin-bottom: 40px;
+    margin: 10px 10px;
+    cursor: pointer;
+    outline: 0;
+    border: 0;
+    
+    
+}
+
+
+
+.output{
+    color: white;
+}
+
+.gradient-custom {
+    background: rgb(2,0,36);
+    background: linear-gradient(135deg, #cc2b5e, #753a88);
+    
+}
