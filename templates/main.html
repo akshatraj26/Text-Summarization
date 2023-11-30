@@ -79,7 +79,13 @@
                         
                         <h2 class="mb-2 py-3 text">Read Less Do More</h2>
                         
-        
+                        {% for message in get_flashed_messages() %}
+                            <div class='alert alert-success text-dark' role='alert'>
+                            {{ message }}
+                            </div>
+
+                        {% endfor %}
+
                         <div class="btn-group-vertical py-3 mb-md-3">
                             
                             <a href="{{url_for('signup')}}">

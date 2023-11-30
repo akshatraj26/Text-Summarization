@@ -13,8 +13,6 @@ import os
 from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous import TimestampSigner, TimedSerializer
-# from itsdangerous import TimedJSONWebSignatureSerializer
-# import bcrypt
 from flask_bcrypt import Bcrypt
 
 
@@ -22,7 +20,7 @@ app = Flask(__name__)
 app.secret_key = 'textsummarizer'
 
  
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "thismyfirstproject"
 db = SQLAlchemy(app)
@@ -51,15 +49,12 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(80), nullable=False)
     username = db.Column(db.String(20), nullable=False, unique=True)
     email = db.Column(db.String(80), nullable=False, unique=True)
-    password = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(128), nullable=False)
     date_created = db.Column(db.DateTime, default = datetime.utcnow)
     
     def get_token(self, expires_sec=300):
-        #serial = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'], expires_in = expires_sec)
-        #serial = URLSafeTimedSerializer(app.config['SECRET_KEY'], serializer=TimedSerializer(max_age = expires_sec))
-        #serial = URLSafeTimedSerializer(app.config['SECRET_KEY'], signer=TimestampSigner())
+        
         serial = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-        #return serial.dumps({'user_id': self.id}, max_age = expires_sec)
         return serial.dumps({'user_id': self.id})
         
     
@@ -145,8 +140,7 @@ def about():
 def send_mail(user):
     token = user.get_token()
     msg = Message('Password Reset Request', recipients= [user.email], sender='rajakshat7985@gmail.com')
-    # print("Token", token)
-    # print("Receipent Mail : ", user.email)
+
     msg.body = f""" To reset your password. Please follow the link below.
     
     
@@ -156,6 +150,8 @@ def send_mail(user):
     
     """
     mail.send(msg)
+
+
 
 @app.route('/reset_request', methods = ['GET', 'POST'])
 def reset_request():
@@ -198,7 +194,7 @@ def reset_password():
     email = session['email']
     user = User.query.filter_by(email = email).first()
     print(email)
-    # user = User.query.get(email)
+    
     if request.method == 'POST':
         pwd = request.form['password']
         re_pwd = request.form['re_password']
@@ -231,17 +227,20 @@ def user_message():
         email = request.form['email']
         subject = request.form['subject']
         message = request.form['message']
-        print(name, email, subject, message)
+        date = UserQuery.query.order_by(UserQuery.date).all()
         
         user_query = UserQuery(fname = name, email=email, subject=subject, message =message)
-        date = UserQuery.query.order_by(UserQuery.date).all()
+        
+        print(name, email, subject, message)
         try:
             db.session.add(user_query)
+            print()
             db.session.commit()
-            flash("Form submitted successfully", 'success')
+            flash("Your Query form submitted successfully", 'success')
         except:
-            flash("This email already exists")
-            return render_template('contacts.html')
+            # flash("This email already exists")
+            
+            return render_template('contacts.html', message = "This email already exists")
     return render_template('contacts.html', name =name, email=email, subject=subject, message =message)
             
             
@@ -297,19 +296,28 @@ def Register():
         uname = request.form['uname']
         email = request.form['email']
         pwd = request.form['password']
+        re_pwd = request.form['re_password']
         
+        if pwd != re_pwd:
+            flash("Passwords do not match. Please type the same password in both field.", "danger")
+            return redirect(url_for('signup'))
         # print(name, uname, email, pwd)
-  
-        new_user = User(name=name, username =uname, email =email, password=pwd)
+        else:
+            # Hash the password using bcrypt
+            hashed_password = bcrypt.generate_password_hash(pwd).decode('utf-8')
 
-        try:
-            
-            db.session.add(new_user)
-            db.session.commit()
-            return redirect('/')
-        except:
-            warning_message = "This username already exists. please choose another one."
-            return render_template('register.html', message =warning_message)
+            # Create a new user using hashed password
+            new_user = User(name=name, username =uname, email =email, password=hashed_password)
+
+            try:
+                
+                db.session.add(new_user)
+                db.session.commit()
+                flash("Welcome You have been registered.", 'success')
+                return redirect(url_for('main'))
+            except:
+                flash("This username already exists. please choose another one.")
+                return render_template('register.html')
     
     else:
         
@@ -352,7 +360,8 @@ def login():
         user = User.query.filter_by(username=user_id).first()
         
         if user:
-            if user.password == pwd:
+            #  Verify hashed password using bcrypt
+            if bcrypt.check_password_hash(user.password, pwd):
                 session['logged_in'] =True
                 session['user_id'] = user.id
                 flash("Login successful!", 'success')
@@ -371,7 +380,6 @@ def login():
             
         else:
             flash("User does not exist. Please register.", 'error')
-            # message = "User does not exist. Please register."
             return render_template('login.html')
     else:
         return redirect(url_for('signin'))
