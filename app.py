@@ -14,7 +14,7 @@ from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous import TimestampSigner, TimedSerializer
 from flask_bcrypt import Bcrypt
-
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.secret_key = 'textsummarizer'
@@ -24,6 +24,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "thismyfirstproject"
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 app.app_context().push()
 
 
@@ -45,11 +47,15 @@ bcrypt = Bcrypt()
 
 
 class User(db.Model, UserMixin):
+    __tablename__ = "client"
+    
+    
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     username = db.Column(db.String(20), nullable=False, unique=True)
     email = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
+    is_verified = db.Column(db.Boolean, default=False)
     date_created = db.Column(db.DateTime, default = datetime.utcnow)
     
     def get_token(self, expires_sec=300):
@@ -122,19 +128,6 @@ def signup():
 def about():
     return render_template('about.html')
 
-
-# @app.route('/reset', methods =['POST', 'GET'])
-# def reset_request():
-#     if request.method == 'POST':
-#         pwd = request.form['password']
-#         re_pwd = request.form['re_password']
-        
-#         if pwd == re_pwd:
-#             return "Password changed successfully"
-#         else:
-#             flash("Password doesn't match", 'error')
-        
-#     return render_template('reset.html')
 
 
 def send_mail(user):
@@ -229,64 +222,133 @@ def user_message():
         message = request.form['message']
         date = UserQuery.query.order_by(UserQuery.date).all()
         
-        user_query = UserQuery(fname = name, email=email, subject=subject, message =message)
+        
+        
+        # check if the email already exists in the database
+        existing_query = UserQuery.query.filter_by(email =email).first()
+        if existing_query:
+            flash("This email already exists", 'danger')
+            return redirect(url_for('contact'))
         
         print(name, email, subject, message)
+        
+        user_query = UserQuery(fname = name, email=email, subject=subject, message =message)
+        
+        
         try:
             db.session.add(user_query)
-            print()
             db.session.commit()
             flash("Your Query form submitted successfully", 'success')
-        except:
-            # flash("This email already exists")
+        except Exception as e:
+            flash("An error occurred while submitting your query", 'danger')
+            print(str(e))
             
-            return render_template('contacts.html', message = "This email already exists")
     return render_template('contacts.html', name =name, email=email, subject=subject, message =message)
             
             
 
 
-## Code for verifying the gmail
+# Code for verifying the gmail
 
-# @app.route('/generate_otp')
-# def generate_otp():
-#         otp = ''
-#         for i in range(6):
-#             otp += str(random.randint(0, 9))
+@app.route('/generate_otp')
+def generate_otp():
+        otp = ''
+        for i in range(6):
+            otp += str(random.randint(0, 9))
         
-#         return otp
+        return otp
 
+@app.route('/verification')
+def verification():
+    name = session['name']
+    return render_template('verification.html', name =name)
+    
 
+@app.route('/verify', methods = ['POST'])
+def verify():
+    
+    session['otp'] = int(generate_otp())
+    otp = session.get('otp')
+    gmail = session['email']
+    msg = Message("Verification Mail", sender='rajakshat7985@gmail.com', recipients=[gmail])
+    msg.body = f"Your otp for the verifiaction of Text Summarizer is {str(otp)} ."
+    try:
+        mail.send(msg)
+        flash("Otp sent successfully")
 
-# @app.route('/verify', methods = ['POST'])
-# def verify():
-#     session['otp'] = int(generate_otp())
-#     otp = session.get('otp')
-#     gmail = request.form['email']
-#     msg = Message("Verification Mail", sender='rajakshat7985@gmail.com', recipients=[gmail])
-#     msg.body = f"Your otp for the verifiaction of Text Summarizer is {str(otp)} ."
-#     try:
-#         mail.send(msg)
-#         msg = "Otp sent successfully"
+    except Exception as e:
+        msg = f"There was some problem sending the email: {str(e)}."
 
-#     except Exception as e:
-#         msg = f"There was some problem sending the email: {str(e)}."
-
-#     return render_template('index.html', msg =msg)
+    return render_template('verification.html', msg =msg)
         
 
-# @app.route('/validate', methods = ['POST'])
-# def validate():
-#     user_otp = request.form['otp']
-#     stored_otp = session.get('otp')
-#     print("user_opt", type(user_otp))
-#     print("stored_otp", type(stored_otp))
-#     if stored_otp == int(user_otp):
-#         message = "Email Verification Succeefully"
-#     else:
-#         message = "Not Verified! Try again"
-#     return render_template('index.html', message=message)
-         
+@app.route('/validate', methods = ['POST', 'GET'])
+def validate():
+    user_otp = request.form['otp']
+    stored_otp = session.get('otp')
+    print("user_opt", type(user_otp))
+    print("stored_otp", type(stored_otp))
+    user_data = {
+                'username': session['username'],
+                'name': session['name'],
+                'email': session['email']
+            }
+    if stored_otp and stored_otp == int(user_otp):
+        user = User.query.filter_by(email = session['email']).first()
+        
+        if user:
+            # set the is_verified to True for the found user
+            user.is_verified =True
+            try:
+                db.session.commit()
+                flash("Email Verification Succeefully", "success")
+                
+            except Exception as e:
+                db.session.rollback()
+                flash("An error occured while updating verification status", 'danger')
+                print(str(e))
+                
+        else:
+            flash("User not found", 'danger')
+    else:
+        flash("Verification failed! Try again", "danger")
+       
+   
+    return render_template('verification.html', user_data=user_data)
+
+
+@app.route('/account', methods= ['POST', 'GET'])
+def account():
+    user_data = None
+    if 'logged_in' in session and session['logged_in']:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        
+        
+        if user:
+            user_data = {
+                'username': user.username,
+                'name': user.name,
+                'email': user.email,
+                
+                
+            }
+            
+            verified = user.is_verified
+            if verified == True:
+                verified_message = "Verified"
+            else:
+                verified_message = "Not Verified! Kindly verify"
+            
+
+        else:
+            flash("User not found", 'error')
+            return redirect(url_for('signin'))
+    else:
+        flash("Please log in first", 'error')
+        return redirect(url_for('signin'))
+    
+    return render_template('account.html', user_data=user_data, verified_message=verified_message)
 
 
 @app.route('/Register', methods = ['GET', 'POST'])
@@ -302,26 +364,38 @@ def Register():
             flash("Passwords do not match. Please type the same password in both field.", "danger")
             return redirect(url_for('signup'))
         # print(name, uname, email, pwd)
-        else:
-            # Hash the password using bcrypt
-            hashed_password = bcrypt.generate_password_hash(pwd).decode('utf-8')
-
-            # Create a new user using hashed password
-            new_user = User(name=name, username =uname, email =email, password=hashed_password)
-
-            try:
-                
-                db.session.add(new_user)
-                db.session.commit()
-                flash("Welcome You have been registered.", 'success')
-                return redirect(url_for('main'))
-            except:
-                flash("This username already exists. please choose another one.")
-                return render_template('register.html')
-    
-    else:
         
-        return render_template('register.html', name = name, uname =uname, email=email, pwd=pwd)
+        existing_user = User.query.filter_by(username=uname).first()
+        existing_email = User.query.filter_by(email = email).first()
+        
+        if existing_user:
+            flash("This username already exists. please choose another one.", 'danger')
+            return redirect(url_for('Register'))
+        
+        if existing_email:
+            flash("This email is already registered. Please use another email.", 'danger')
+            return redirect(url_for('Register'))
+        
+        
+        # Hash the password using bcrypt
+        hashed_password = bcrypt.generate_password_hash(pwd).decode('utf-8')
+
+        # Create a new user using hashed password
+        new_user = User(name=name, username =uname, email =email, password=hashed_password)
+
+        try:
+                
+            db.session.add(new_user)
+            db.session.commit()
+            flash("Welcome You have been registered.", 'success')
+            return redirect(url_for('main'))
+        except Exception as e:
+            flash("An error occured while registering. Please try again.", 'danger')
+            print(str(e))
+            return render_template('register.html')
+    
+   
+    return render_template('register.html', name = name, uname =uname, email=email, pwd=pwd)
         
 
 @app.route('/signin')
@@ -330,26 +404,6 @@ def signin():
 
 
 
-@app.route('/account', methods= ['POST', 'GET'])
-def account():
-    if 'logged_in' in session and session['logged_in']:
-        user_id = session['user_id']
-        user = User.query.get(user_id)
-
-        if user:
-            user_data = {
-                'username': user.username,
-                'name': user.name,
-                'email': user.email
-            }
-
-            return render_template('account.html', user_data=user_data)
-        else:
-            flash("User not found", 'error')
-            return redirect(url_for('signin'))
-    else:
-        flash("Please log in first", 'error')
-        return redirect(url_for('signin'))
 
     
 @app.route('/login', methods=['GET', 'POST'])
@@ -358,6 +412,10 @@ def login():
         user_id = request.form['username']
         pwd = request.form['password']
         user = User.query.filter_by(username=user_id).first()
+        session['email'] = user.email
+        session['username'] = user.username
+        session['name'] = user.name
+        
         
         if user:
             #  Verify hashed password using bcrypt

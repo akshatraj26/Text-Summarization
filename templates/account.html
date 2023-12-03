@@ -17,47 +17,44 @@
          <header>
             <div class="row text-center nav-container">
              <div class= "row text-center mt-3 nav-bar">
-                     <div class="col-3">
+                     <div class="col-2">
                          <a href = "{{ url_for('index')}}">
                          <i class="fa-solid fa-house"></i>
                          <p> Home </p></a>
                     </div>
 
-                    <div class="col-3">
+                    <div class="col-2">
                         <a href = "{{ url_for('about')}}">
                         <i class="fa-solid fa-house"></i>
                         <p> About Us </p></a>
                         </div>
                      
-                     <div class="col-3">
+                     <div class="col-2">
                          <a href="{{ url_for('contact')}}">
                              <i class="fa-solid fa-address-card"></i>
                              <p>Contact Us</p>
                          </a>
                      </div>
 
-                     <div class="col-3">
+                     <div class="col-2">
                         <a href = "{{ url_for('logout')}}">
                            <i class="fa-solid fa-right-from-bracket"></i>
                            <p> Log Out </p>
                         </a>
                     </div>
+
+                    <div class="col-2">
+                        <a href = "{{ url_for('verification')}}">
+                            <i class="fa-solid fa-certificate"></i>
+                        <p>Verify </p></a>
+                        </div>
                 
                  </div>
              </div>
          </header>
-<!--
-        <div class="container text-center mt-3">
-            <div class="container-2 text-center mt-3">
-                
-                
-                
-            </div>
-    </div>
-</div>
--->
 
-<form class="form" action= "{{ url_for('Register')}}" method="POST">
+
+<form class="form" action= "{{ url_for('account')}}" method="POST">
     <section class="vh-75 gradient-custom">
         <div class="container py-3 h-100">
           <div class="row d-flex justify-content-center align-items-center h-75">
@@ -67,25 +64,33 @@
       
                   <div class="mb-md-3 mt-md-3 pb-5">
       
-                    <h2 class="fw-bold my-4 text-center">Profile</h2>
+                        <h2 class="fw-bold my-4 text-center">Profile</h2>
+
+                        {% if user_data %}
                    
-                    <div class="form-outline form-white mb-4">
+                        <div class="form-outline form-white mb-4">
 
-                        <h1>Welcome, {{user_data.username }}</h1>
-                    </div>
-      
-                    <div class="form-outline form-white mb-4">
-                      
-                        <p>Name : {{ user_data.name }}</p>
-                    </div>
-                    
-                    <div class="form-outline form-white mb-4">
-                        <p> Email: {{ user_data.email}}</p>
-                    </div>
+                            <h1>Welcome, {{user_data.username }}</h1>
+                        </div>
+        
+                        <div class="form-outline form-white mb-4">
+                        
+                            <p>Name : {{ user_data.name }}</p>
+                        </div>
+                        
+                        <div class="form-outline form-white mb-4">
+                            <p> Email: {{ user_data.email}}</p>
+                        </div>
+
+                        {% endif %}
+
+                        <div class="form-outline form-white mb-4">
+                            <p>Your account is  {{ verified_message }}</p>
+                        </div>
 
 
-                  
-      
+                    </div>
+
                 </div>
               </div>
             </div>
@@ -94,8 +99,9 @@
       </section>
     </form>
 
-   
+
    
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        
     </body>
 </html>
