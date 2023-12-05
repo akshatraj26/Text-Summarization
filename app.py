@@ -10,9 +10,7 @@ from spacy.lang.en.stop_words import STOP_WORDS
 import re
 import random
 import os
-from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 from itsdangerous import URLSafeTimedSerializer
-from itsdangerous import TimestampSigner, TimedSerializer
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 
@@ -47,7 +45,7 @@ bcrypt = Bcrypt()
 
 
 class User(db.Model, UserMixin):
-    __tablename__ = "client"
+    __tablename__ = "client_update"
     
     
     id = db.Column(db.Integer, primary_key=True)
@@ -56,6 +54,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     is_verified = db.Column(db.Boolean, default=False)
+    is_deleted = db.Column(db.Boolean, default=False)
     date_created = db.Column(db.DateTime, default = datetime.utcnow)
     
     def get_token(self, expires_sec=300):
@@ -128,227 +127,16 @@ def signup():
 def about():
     return render_template('about.html')
 
+@app.route('/signin')
+def signin():
+    return render_template('login.html')
 
-
-def send_mail(user):
-    token = user.get_token()
-    msg = Message('Password Reset Request', recipients= [user.email], sender='rajakshat7985@gmail.com')
-
-    msg.body = f""" To reset your password. Please follow the link below.
-    
-    
-    {url_for('reset_token', token=token, _external =True)}
-    
-    If you didn't send a password reset request. Please ignore this message.
-    
-    """
-    mail.send(msg)
-
-
-
-@app.route('/reset_request', methods = ['GET', 'POST'])
-def reset_request():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        session['email'] = email
-        if email:
-            user = User.query.filter_by(email = email).first()
-            if user:
-                send_mail(user=user)
-                flash("Reset request sent. Please Check your mail.", 'success')
-                return redirect(url_for('login'))
-            else:
-                flash("Email not found. Please give use the right email.", 'error')
-                return redirect(url_for('reset_request'))
-            
-    return render_template('reset_request.html')
-
-
-
-
-
-@app.route('/reset_request/<token>', methods =['GET', 'POST'])
-def reset_token(token):
-    user = User.verify_token(token)
-    
-    if user is None:
-        flash("That is an invalid token or it has expired. Please try again.", 'warning')
-        return redirect(url_for('reset_request'))
-    else:
-        return redirect(url_for('reset_password'))
-
-
-
-
-@app.route("/reset_password", methods=['GET', 'POST'])
-def reset_password():
-    
-    
-    email = session['email']
-    user = User.query.filter_by(email = email).first()
-    print(email)
-    
-    if request.method == 'POST':
-        pwd = request.form['password']
-        re_pwd = request.form['re_password']
-        print("pwd", pwd)
-        print("Re_pwd", re_pwd)
-        if pwd != re_pwd:
-            flash("Passwords do not match. Please retype the password properly.", "danger")
-            return render_template('reset_password.html')
-        else:
-            hashed_password = bcrypt.generate_password_hash(pwd).decode('utf-8')
-            
-            print("Saved Password : ", user.password)
-            print("Input Password : ", pwd)
-            user.password = hashed_password
-            db.session.commit()
-            flash("Password changed! Please login", "success")
-            return redirect(url_for('login'))
-    return render_template('reset_password.html')
-
-
-
-
-@app.route('/user_message', methods=["GET", 'POST'])
-def user_message():
-    
-    
-    if request.method == "POST":
-        
-        name = request.form['user_name']
-        email = request.form['email']
-        subject = request.form['subject']
-        message = request.form['message']
-        date = UserQuery.query.order_by(UserQuery.date).all()
-        
-        
-        
-        # check if the email already exists in the database
-        existing_query = UserQuery.query.filter_by(email =email).first()
-        if existing_query:
-            flash("This email already exists", 'danger')
-            return redirect(url_for('contact'))
-        
-        print(name, email, subject, message)
-        
-        user_query = UserQuery(fname = name, email=email, subject=subject, message =message)
-        
-        
-        try:
-            db.session.add(user_query)
-            db.session.commit()
-            flash("Your Query form submitted successfully", 'success')
-        except Exception as e:
-            flash("An error occurred while submitting your query", 'danger')
-            print(str(e))
-            
-    return render_template('contacts.html', name =name, email=email, subject=subject, message =message)
-            
-            
-
-
-# Code for verifying the gmail
-
-@app.route('/generate_otp')
-def generate_otp():
-        otp = ''
-        for i in range(6):
-            otp += str(random.randint(0, 9))
-        
-        return otp
-
-@app.route('/verification')
-def verification():
-    name = session['name']
-    return render_template('verification.html', name =name)
-    
-
-@app.route('/verify', methods = ['POST'])
-def verify():
-    
-    session['otp'] = int(generate_otp())
-    otp = session.get('otp')
-    gmail = session['email']
-    msg = Message("Verification Mail", sender='rajakshat7985@gmail.com', recipients=[gmail])
-    msg.body = f"Your otp for the verifiaction of Text Summarizer is {str(otp)} ."
-    try:
-        mail.send(msg)
-        flash("Otp sent successfully")
-
-    except Exception as e:
-        msg = f"There was some problem sending the email: {str(e)}."
-
-    return render_template('verification.html', msg =msg)
-        
-
-@app.route('/validate', methods = ['POST', 'GET'])
-def validate():
-    user_otp = request.form['otp']
-    stored_otp = session.get('otp')
-    print("user_opt", type(user_otp))
-    print("stored_otp", type(stored_otp))
-    user_data = {
-                'username': session['username'],
-                'name': session['name'],
-                'email': session['email']
-            }
-    if stored_otp and stored_otp == int(user_otp):
-        user = User.query.filter_by(email = session['email']).first()
-        
-        if user:
-            # set the is_verified to True for the found user
-            user.is_verified =True
-            try:
-                db.session.commit()
-                flash("Email Verification Succeefully", "success")
-                
-            except Exception as e:
-                db.session.rollback()
-                flash("An error occured while updating verification status", 'danger')
-                print(str(e))
-                
-        else:
-            flash("User not found", 'danger')
-    else:
-        flash("Verification failed! Try again", "danger")
        
-   
-    return render_template('verification.html', user_data=user_data)
+"""
+Create your account and get registered.
 
+"""           
 
-@app.route('/account', methods= ['POST', 'GET'])
-def account():
-    user_data = None
-    if 'logged_in' in session and session['logged_in']:
-        user_id = session['user_id']
-        user = User.query.get(user_id)
-        
-        
-        if user:
-            user_data = {
-                'username': user.username,
-                'name': user.name,
-                'email': user.email,
-                
-                
-            }
-            
-            verified = user.is_verified
-            if verified == True:
-                verified_message = "Verified"
-            else:
-                verified_message = "Not Verified! Kindly verify"
-            
-
-        else:
-            flash("User not found", 'error')
-            return redirect(url_for('signin'))
-    else:
-        flash("Please log in first", 'error')
-        return redirect(url_for('signin'))
-    
-    return render_template('account.html', user_data=user_data, verified_message=verified_message)
 
 
 @app.route('/Register', methods = ['GET', 'POST'])
@@ -395,16 +183,12 @@ def Register():
             return render_template('register.html')
     
    
-    return render_template('register.html', name = name, uname =uname, email=email, pwd=pwd)
+    return render_template('register.html')
         
-
-@app.route('/signin')
-def signin():
-    return render_template('login.html')
-
-
-
-
+"""
+ Login Logic on the web application
+ 
+"""
     
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -412,43 +196,365 @@ def login():
         user_id = request.form['username']
         pwd = request.form['password']
         user = User.query.filter_by(username=user_id).first()
-        session['email'] = user.email
-        session['username'] = user.username
-        session['name'] = user.name
         
-        
+ 
         if user:
-            #  Verify hashed password using bcrypt
-            if bcrypt.check_password_hash(user.password, pwd):
-                session['logged_in'] =True
-                session['user_id'] = user.id
-                flash("Login successful!", 'success')
-                
-                user_data = {'username' : user.username,
-                            'name' : user.name,
-                            'email' : user.email
-                            }
-                
-                return render_template('index.html',  name = user_data['name'] )
+            if not user.is_deleted:
+                #  Verify hashed password using bcrypt
+                if bcrypt.check_password_hash(user.password, pwd):
+                    session['logged_in'] =True
+                    session['user_id'] = user.id
+                    session['email'] = user.email
+                    session['username'] = user.username
+                    session['name'] = user.name
+                    flash("Login successful!", 'success')
+                    
+                    user_data = {'username' : user.username,
+                                'name' : user.name,
+                                'email' : user.email
+                                }
+                    
+                    return render_template('index.html',  name = user_data['name'] )
 
-            else:
-                flash("Incorrect password. Please try again.", 'error')
-                
-                return  render_template('login.html')
+                else:
+                    flash("Incorrect username or password. Please try again.", 'error')
+                    
+                    return  redirect(url_for('signin'))
             
+            else:
+                flash("User does not exist or has been deleted. Please register.", 'error')
+                return redirect(url_for('signup'))
         else:
-            flash("User does not exist. Please register.", 'error')
-            return render_template('login.html')
+            flash("Incorrect username or password. Please try again.", 'error')     
+            return  redirect(url_for('signin'))
     else:
         return redirect(url_for('signin'))
     
+"""
+Code for verifying the gmail using otp
+
+"""
+
+@app.route('/generate_otp')
+def generate_otp():
+        otp = ''
+        for i in range(6):
+            otp += str(random.randint(0, 9))
+        
+        return otp
+
+@app.route('/verification')
+def verification():
+    name = session['name']
+    return render_template('verification.html', name =name)
+    
+
+@app.route('/verify', methods = ['POST'])
+def verify():
+    
+    session['otp'] = int(generate_otp())
+    otp = session.get('otp')
+    gmail = session['email']
+    name = session['name']
+    msg = Message("Verification Mail", sender='rajakshat7985@gmail.com', recipients=[gmail])
+    msg.body = f"Your otp for the verifiaction of Text Summarizer is {str(otp)} and your username is {session['username']}."
+    try:
+        mail.send(msg)
+        flash("Otp sent successfully")
+
+    except Exception as e:
+        msg = f"There was some problem sending the email: {str(e)}."
+
+    return render_template('verification.html', msg =msg, name =name)
+        
+
+@app.route('/validate', methods = ['POST', 'GET'])
+def validate():
+    user_otp = request.form['otp']
+    stored_otp = session.get('otp')
+    # print("user_opt", type(user_otp))
+    # print("stored_otp", type(stored_otp))
+   
+    name =  session['name']
+
+    if stored_otp and stored_otp == int(user_otp):
+        user = User.query.filter_by(email = session['email']).first()
+        
+        if user:
+            
+            if user.is_verified:
+                flash("Your account is already verified.", 'success')
+
+                
+            else:
+                # set the is_verified to True for the found user
+                user.is_verified =True
+                try:
+                    db.session.commit()
+                    flash("Email Verification Succeefully", "success")
+                    
+                except Exception as e:
+                    db.session.rollback()
+                    flash("An error occured while updating verification status", 'danger')
+                    print(str(e))
+        else:
+            flash("User not found.", 'danger')
+                
+    else:
+        flash("Verification failed! Try again", "danger")
+       
+   
+    return render_template('verification.html', name=name)
+
+""" 
+
+Take the user complain using this form
+
+"""
+
+@app.route('/user_message', methods=["GET", 'POST'])
+def user_message():
+
+    if request.method == "POST":
+        
+        name = request.form['user_name']
+        email = request.form['email']
+        subject = request.form['subject']
+        message = request.form['message']
+        date = UserQuery.query.order_by(UserQuery.date).all()
+
+        # check if the email already exists in the database
+        existing_query = UserQuery.query.filter_by(email =email).first()
+        if existing_query:
+            flash("This email already exists", 'danger')
+            return redirect(url_for('contact'))
+        
+        print(name, email, subject, message)
+        
+        user_query = UserQuery(fname = name, email=email, subject=subject, message =message)
+        
+        
+        try:
+            db.session.add(user_query)
+            db.session.commit()
+            flash("Your Query form submitted successfully", 'success')
+        except Exception as e:
+            flash("An error occurred while submitting your query", 'danger')
+            print(str(e))
+            
+    return render_template('contacts.html', name =name, email=email, subject=subject, message =message)
+
+
+
+"""
+
+Reset Password using tokens 
+
+"""
+
+def send_mail(user):
+    token = user.get_token()
+    msg = Message('Password Reset Request', recipients= [user.email], sender='rajakshat7985@gmail.com')
+
+    msg.body = f""" To reset your password. Please follow the link below.
+    
+    
+    {url_for('reset_token', token=token, _external =True)}
+    
+    and your username is {user.username}
+    
+    If you didn't send a password reset request. Please ignore this message.
+    
+    """
+    mail.send(msg)
+
+
+
+@app.route('/reset_request', methods = ['GET', 'POST'])
+def reset_request():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        session['email'] = email
+        if email:
+            user = User.query.filter_by(email = email).first()
+            if user:
+                send_mail(user=user)
+                flash("Reset request sent. Please Check your mail.", 'success')
+                return redirect(url_for('login'))
+            else:
+                flash("Email not found. Please give use the right email.", 'error')
+                return redirect(url_for('reset_request'))
+            
+    return render_template('reset_request.html')
+
+
+
+@app.route('/reset_request/<token>', methods =['GET', 'POST'])
+def reset_token(token):
+    user = User.verify_token(token)
+    
+    if user is None:
+        flash("That is an invalid token or it has expired. Please try again.", 'warning')
+        return redirect(url_for('reset_request'))
+    else:
+        return redirect(url_for('reset_password'))
+
+"""
+Logic for the Password reset
+
+"""
+
+@app.route("/reset_password", methods=['GET', 'POST'])
+def reset_password():
+
+
+    user = User.query.filter_by(email = session['email']).first()
+    # print(email)
+    
+    if request.method == 'POST':
+        pwd = request.form['password']
+        re_pwd = request.form['re_password']
+        print("pwd", pwd)
+        print("Re_pwd", re_pwd)
+        if pwd != re_pwd:
+            flash("Passwords do not match. Please retype the password properly.", "danger")
+            return render_template('reset_password.html')
+        else:
+            hashed_password = bcrypt.generate_password_hash(pwd).decode('utf-8')
+            
+            
+            user.password = hashed_password
+            db.session.commit()
+            flash("Password changed! Please login", "success")
+            return redirect(url_for('login'))
+    return render_template('reset_password.html')
+
+
+
+
+@app.route('/account', methods= ['POST', 'GET'])
+def account():
+    # user_data = None
+    if 'logged_in' not in session or not session['logged_in']:
+        flash('Please log in first', 'error')
+        return redirect(url_for('signin'))
+    
+    
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+        
+    if not user:
+        flash('User not found', 'error')
+        return redirect(url_for('signin'))
+    
+    user_data = {
+        'username': user.username,
+        'name': user.name,
+        'email': user.email    
+            }
+            
+    if user.is_verified:
+        verified_msg = "Verified"
+    else:
+        verified_msg = "Not Verified! Kindly"
+            
+    
+    return render_template('account.html', user_data=user_data, verified_message=verified_msg, name = user_data['name'])
+
+
+
+"""
+
+@app.route('/delete')
+def delete():
+    username = session['username']
+    delete_account = User.query.filter_by(username=username).first_or_404()
+    
+    if user:
+        try:
+            
+            db.session.delete(delete_account)
+            db.session.commit()
+            flash('Account deleted successfully.', 'success')
+            return redirect('/')
+        except Exception as e:
+            db.session.rollback()
+            flash("There was an issue deleting the account.", 'danger')
+            print(str(e))
+    else:
+        flash('You are not logged in.', 'danger')
+        
+    
+    return redirect(url_for('account'))
+
+"""
+
+@app.route('/delete')
+def delete():
+    username = session['username']
+    user = User.query.filter_by(username=username).first_or_404()
+    if user:
+        if user.is_deleted:
+            flash('You have deleted your account', 'error')
+        else:
+            user.is_deleted = True
+            try:
+                db.session.commit()
+                flash('Account deleted successfully.', 'success')
+                return redirect('/')
+            except Exception as e:
+                db.session.rollback()
+                flash("There was an issue deleting your account.", 'danger')
+                print(str(e))
+    else:
+        flash('You are not logged in.', 'danger')
+        
+    
+        return redirect(url_for('account'))
+
+
+
+"""
+
+Edit the profile details
+
+"""
+
+@app.route('/update', methods =['GET', 'POST'])
+def edit_profile():
+    
+    user = User.query.filter_by(username = session['username']).first()
+    
+    if user:
+        if request.method == 'POST':
+            # Update the user Information in the database
+            
+            user.name = request.form['name']
+            user.username = request.form['uname']
+            try:
+                db.session.commit()
+                flash('Profile updated successfully.', 'success')
+                return redirect(url_for('account'))
+            except Exception as e:
+                db.session.rollback()
+                flash('Failed to update profile.', 'danger')
+                print(str(e))
+             
+        
+    
+    return render_template('edit_profile.html', user =user)
+    
+
+
+""" To get out of your account """  
 
 @app.route("/logout")
 def logout():
     session.pop("user", None)
+    flash('Log out successful', 'success')
     return redirect(url_for('login'))   
     
-   
+"""Main logic that summarize the lenthy article into summary"""  
 
 @app.route('/summarizer', methods=['POST'])
 def summarizer():
@@ -460,7 +566,7 @@ def summarizer():
         doc = nlp(user_input)
         def calculate_word_frequency(doc):
             """This will calculate the how many times a word is repetation
-            in an articles or in another word frequency of each and every word.
+                in an articles or in another word frequency of each and every word.
             """
             
             stopwords = list(STOP_WORDS) 

@@ -57,7 +57,9 @@
             cursor: pointer;
             outline: 0;
             border: 0;
-            transition: background 1s; 
+            transition: background 1s;
+            
+            color: white;
         }
 
 
@@ -80,20 +82,24 @@
                         <h2 class="mb-2 py-3 text">Read Less Do More</h2>
                         
                         {% for message in get_flashed_messages() %}
-                            <div class='alert alert-success text-dark' role='alert'>
-                            {{ message }}
-                            </div>
+                            <div class='alert alert-success alert-dismissible fade show ' role='alert'>
+                                {{ message }}
+                                </div>
 
+
+                            
                         {% endfor %}
+
+                      
 
                         <div class="btn-group-vertical py-3 mb-md-3">
                             
                             <a href="{{url_for('signup')}}">
-                                <button type="button" >Sign Up</button>
+                                <button type="button" class="btn btn-success">Sign Up</button>
                             </a>
                         
                             <a href="{{url_for('signin')}}">
-                                <button type="button" >Sign In</button>
+                                <button type="button" class="btn btn-success">Sign In</button>
                             </a>
                         </div>
                     </div>
@@ -104,7 +110,8 @@
         </section>
         </form>
             
-        <script src="" async defer></script>
+        <script src="{{url_for('static', filename='script.js')}}" async defer></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
     </body>
