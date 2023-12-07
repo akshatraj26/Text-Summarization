@@ -35,5 +35,7 @@ This take a two same articles from different site and gives you the summary.
 
 ![testing3](https://github.com/akshatraj26/Text-Summarization/blob/main/Screenshot%20(399).png)
 
+![testing3](https://github.com/akshatraj26/Text-Summarization/blob/main/Screenshot%20(400).png)
+
 
 
