@@ -100,12 +100,13 @@ class UserQuery(db.Model):
     subject = db.Column(db.String(100), nullable=False)
     indian_time = pytz.timezone('Asia/Kolkata')
     date = db.Column(db.DateTime, default = datetime.now(indian_time))
-    
-    
+      
     
     
     def __repr_(self):
         return f"UserQuery: {self.fname} - {self.message}"
+  
+  
   
   
 
