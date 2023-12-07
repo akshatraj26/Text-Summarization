@@ -13,9 +13,9 @@ import os
 from itsdangerous import URLSafeTimedSerializer
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
+import pytz
 
 app = Flask(__name__)
-app.secret_key = 'textsummarizer'
 
  
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -55,7 +55,9 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(128), nullable=False)
     is_verified = db.Column(db.Boolean, default=False)
     is_deleted = db.Column(db.Boolean, default=False)
-    date_created = db.Column(db.DateTime, default = datetime.utcnow)
+    indian_time = pytz.timezone('Asia/Kolkata')
+    date_created = db.Column(db.DateTime, default = datetime.now(indian_time))
+    
     
     def get_token(self, expires_sec=300):
         
@@ -83,7 +85,9 @@ class Summary(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_input = db.Column(db.Text(), nullable=False)
     summary_text = db.Column(db.Text(), nullable=False)
-    date_created = db.Column(db.DateTime, default= datetime.utcnow)
+    indian_time = pytz.timezone('Asia/Kolkata')
+    date_created = db.Column(db.DateTime, default = datetime.now(indian_time))
+    
     
     def __repr__(self):
         return f"User: {self.user_input} - {self.summary_text}"
@@ -94,7 +98,11 @@ class UserQuery(db.Model):
     message = db.Column(db.Text, nullable =False)
     email = db.Column(db.String(80), nullable=False, unique=True)
     subject = db.Column(db.String(100), nullable=False)
-    date = db.Column(db.DateTime, default = datetime.utcnow)
+    indian_time = pytz.timezone('Asia/Kolkata')
+    date = db.Column(db.DateTime, default = datetime.now(indian_time))
+    
+    
+    
     
     def __repr_(self):
         return f"UserQuery: {self.fname} - {self.message}"
@@ -463,31 +471,7 @@ def account():
 
 
 
-"""
-
-@app.route('/delete')
-def delete():
-    username = session['username']
-    delete_account = User.query.filter_by(username=username).first_or_404()
-    
-    if user:
-        try:
-            
-            db.session.delete(delete_account)
-            db.session.commit()
-            flash('Account deleted successfully.', 'success')
-            return redirect('/')
-        except Exception as e:
-            db.session.rollback()
-            flash("There was an issue deleting the account.", 'danger')
-            print(str(e))
-    else:
-        flash('You are not logged in.', 'danger')
-        
-    
-    return redirect(url_for('account'))
-
-"""
+# Delete the account
 
 @app.route('/delete')
 def delete():

@@ -6,8 +6,8 @@
 
 
  $(document).ready(function() {
-   // Auto-dismiss flash messages after 4 seconds (4000 milliseconds)
-   $(".alert").delay(4000).fadeOut('slow');
+   // Auto-dismiss flash messages after 3 seconds (3000 milliseconds)
+   $(".alert").delay(3000).fadeOut('slow');
 })
 
 
