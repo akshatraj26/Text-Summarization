@@ -1,5 +1,5 @@
 # Text-Summarization
-This take a two same articles from different site and gives you the summary.
+This take a lenthy articles from different site and concise it
 
 
 
